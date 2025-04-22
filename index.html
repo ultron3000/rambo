@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rambo Movie Collection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      text-align: center;
+      background: url('https://images7.alphacoders.com/117/1173804.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 30px 15px;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px #000;
+      text-transform: uppercase;
+      padding-top: 20%;
+    }
+    .movie-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+    .movie-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #00aaff;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      transition: transform 0.3s, background 0.3s;
+    }
+    .movie-card:hover {
+      transform: scale(1.03);
+      background: rgba(0, 170, 255, 0.2);
+    }
+    .movie-card a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 1.2rem;
+    }
+
+    @media(min-width: 768px) {
+      .movie-container {
+        flex-direction: row;
+        justify-content: center;
+        max-width: 900px;
+      }
+      .movie-card {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>Rambo Movie Collection</h1>
+    <div class="movie-container">
+      <div class="movie-card"><a href="firstblood.html">First Blood (1982)</a></div>
+      <div class="movie-card"><a href="rambo2.html">Rambo: First Blood Part II (1985)</a></div>
+      <div class="movie-card"><a href="rambo3.html">Rambo III (1988)</a></div>
+      <div class="movie-card"><a href="rambo2008.html">Rambo (2008)</a></div>
+      <div class="movie-card"><a href="rambolastblood.html">Rambo: Last Blood (2019)</a></div>
+    </div>
+  </div>
+</body>
+</html>
