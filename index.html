@@ -2,99 +2,437 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Rambo</title>
+  <title>Rambo Cinematic Universe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --primary: #d4af37;
+      --secondary: #b8860b;
+      --dark: #0a0a0a;
+      --light-dark: #1a1a1a;
+      --light: #f8f8f8;
+    }
+    
     body {
-      background: black;
-      color: #ffcc00;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
+      background-color: var(--dark);
+      color: var(--light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    h1 {
-      margin-bottom: 20px;
-      font-size: 2em;
+    
+    .gold-text {
+      color: var(--primary);
+      text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
     }
-    .movies {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
+    
+    .movie-card {
+      transition: all 0.3s ease;
+      background: linear-gradient(145deg, var(--light-dark), #121212);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      overflow: hidden;
     }
-    .movie {
-      background: #222;
-      border: 2px solid #ffcc00;
-      border-radius: 12px;
-      width: 200px;
-      padding: 10px;
-      cursor: pointer;
-      transition: transform 0.3s;
+    
+    .movie-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+      border-color: var(--primary);
     }
-    .movie:hover {
+    
+    .movie-poster {
+      transition: all 0.5s ease;
+      height: 380px;
+    }
+    
+    .movie-card:hover .movie-poster {
       transform: scale(1.05);
-      background: #333;
     }
-    .movie img {
-      width: 100%;
-      height: 280px;
-      object-fit: cover;
-      border-radius: 10px;
+    
+    .year-badge {
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--primary);
     }
-    .movie-title {
-      margin-top: 10px;
-      font-size: 1em;
-      font-weight: bold;
+    
+    .search-input:focus {
+      box-shadow: 0 0 0 2px var(--primary);
     }
-  
-    @media (max-width: 600px) {
-      .movies {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+    
+    .filter-btn.active {
+      background-color: var(--primary);
+      color: var(--dark);
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    .theme-toggle:checked {
+      background-color: var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      .movie-poster {
+        height: 280px;
       }
-      .movie {
-        width: 100%;
-        box-sizing: border-box;
-      }
-      .movie img {
-        height: auto;
-      }
     }
-
   </style>
 </head>
-<body>
+<body class="relative">
+  <!-- Header Section -->
+  <header class="sticky top-0 z-50 bg-black bg-opacity-90 backdrop-blur-sm border-b border-gray-800">
+    <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-4">
+        <h1 class="text-3xl font-bold gold-text flex items-center gap-2">
+          <i class="fas fa-fire text-red-600"></i>
+          RAMBO <span class="hidden sm:inline">CINEMATIC UNIVERSE</span>
+        </h1>
+      </div>
+      
+      <div class="flex items-center gap-4">
+        <!-- Search Bar -->
+        <div class="relative">
+          <input type="text" 
+                 placeholder="Search movies..." 
+                 class="search-input bg-gray-900 text-white rounded-full py-2 px-4 pl-10 w-full md:w-64 focus:outline-none transition-all"
+                 id="searchInput">
+          <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" value="" class="sr-only peer theme-toggle" id="themeToggle">
+          <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+          <span class="ml-2 text-sm font-medium text-gray-300">
+            <i class="fas fa-sun text-yellow-400"></i>
+          </span>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="container mx-auto px-4 pb-4 overflow-x-auto scrollbar-hide">
+      <div class="flex gap-2">
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all active" data-filter="all">All</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all" data-filter="1980s">1980s</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all" data-filter="2000s">2000s</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all" data-filter="2010s">2010s</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all" data-filter="action">Action</button>
+        <button class="filter-btn px-4 py-2 rounded-full bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all" data-filter="war">War</button>
+      </div>
+    </div>
+  </header>
 
-<h1>🚨 Rambo Cinematic Universe</h1>
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- Featured Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold gold-text mb-6 flex items-center gap-2">
+        <i class="fas fa-star"></i> Featured Collection
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6" id="moviesContainer">
+        <!-- Movie cards will be inserted here by JavaScript -->
+      </div>
+    </section>
+    
+    <!-- Recently Added Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold gold-text mb-6 flex items-center gap-2">
+        <i class="fas fa-clock"></i> Recently Added
+      </h2>
+      <div class="relative">
+        <div class="overflow-x-auto scrollbar-hide pb-4">
+          <div class="flex gap-4" id="recentlyAddedContainer">
+            <!-- Recently added movies will be inserted here by JavaScript -->
+          </div>
+        </div>
+        <button class="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 z-10 -ml-4 hidden md:block" id="scrollLeft">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="absolute right-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 z-10 -mr-4 hidden md:block" id="scrollRight">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
+  </main>
 
-<div class="movies" id="movies"></div>
+  <!-- Footer -->
+  <footer class="bg-black bg-opacity-80 py-8 border-t border-gray-800">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="text-center md:text-left">
+          <h3 class="text-xl font-bold gold-text mb-2">RAMBO CINEMATIC UNIVERSE</h3>
+          <p class="text-gray-400">The ultimate collection of John Rambo's adventures</p>
+        </div>
+        
+        <div class="flex gap-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-all">
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="mt-8 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+        <p>© 2023 Rambo Cinematic Universe. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-<script>
-const movies = [
-  { title: "First Blood (1982)", video: "https://sipt.griseldakro.sbs:443/v4/hz/dzuls/index-f2-v1-a1.txt", image: "https://artofethanpro.com/cdn/shop/products/FB_WebShop.jpg?v=1679946052" },
-  { title: "Rambo: First Blood Part II (1985)", video: "https://skra.thurberdvob.sbs:443/v4/db/6nzto/index-f2-v1-a1.txt", image: "https://alternativemovieposters.com/wp-content/uploads/2020/08/OscarMartinez_Rambo2.jpg" },
-  { title: "Rambo III (1988)", video: "https://s3ae.desrocherswick.sbs:443/v4/db/3ggcx/index-f2-v1-a1.txt", image: "https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/MW7CIK2DMZGGBGMQTU7MOUCZ4I.jpg" },
-  { title: "Rambo (2008)", video: "https://sr81.yevettesha.sbs/v4/9a/qg99w/cf-master.txt?v=1734820797", image: "https://images.sr.roku.com/idType/roku/context/global/id/ec09db9d818d59428b6f7ed6819ac2c2/images/gracenote/assets/p173465_d_v8_aa.jpg/magic/396x0/filters:quality(70)" },
-  { title: "Rambo: Last Blood (2019)", video: "https://s9dz.yevettesh.sbs:443/v4/ck/ejy89/index-f2-v1-a1.txt", image: "https://play-lh.googleusercontent.com/v8OwCzJT_jV5ubJK_mffryr3-dtR0If3n7a5sURXiFdNV7VmXPWFBmt7rOtZicfCI7lMFnC8VXjN0LVQOFo=w240-h480-rw" },
-  ];
+  <!-- Back to Top Button -->
+  <button id="backToTop" class="fixed bottom-8 right-8 bg-gray-900 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-all opacity-0 invisible">
+    <i class="fas fa-arrow-up"></i>
+  </button>
 
-const container = document.getElementById('movies');
-movies.forEach((movie, index) => {
-  const div = document.createElement('div');
-  div.className = 'movie';
-  div.innerHTML = `
-    <img src="${movie.image}" alt="${movie.title}">
-    <div class="movie-title">${movie.title}</div>
-  `;
-  div.onclick = () => {
-    const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(movie.video)}&index=${index}`;
-    window.location.href = url;
-  };
-  container.appendChild(div);
-});
-</script>
+  <script>
+    // Movie data
+    const movies = [
+      { 
+        title: "First Blood", 
+        year: 1982,
+        video: "https://sipt.griseldakro.sbs:443/v4/hz/dzuls/index-f2-v1-a1.txt", 
+        image: "https://artofethanpro.com/cdn/shop/products/FB_WebShop.jpg?v=1679946052",
+        tags: ["action", "drama", "1980s"],
+        description: "John Rambo, a Vietnam veteran, must rely on his combat and survival senses against the abusive law enforcement of a small town.",
+        rating: 4.8,
+        duration: "93 min"
+      },
+      { 
+        title: "Rambo: First Blood Part II", 
+        year: 1985,
+        video: "https://skra.thurberdvob.sbs:443/v4/db/6nzto/index-f2-v1-a1.txt", 
+        image: "https://alternativemovieposters.com/wp-content/uploads/2020/08/OscarMartinez_Rambo2.jpg",
+        tags: ["action", "war", "1980s"],
+        description: "Rambo is released from prison by the government for a top-secret covert mission to the last place on Earth he'd want to return - the jungles of Vietnam.",
+        rating: 4.5,
+        duration: "96 min"
+      },
+      { 
+        title: "Rambo III", 
+        year: 1988,
+        video: "https://s3ae.desrocherswick.sbs:443/v4/db/3ggcx/index-f2-v1-a1.txt", 
+        image: "https://cloudfront-eu-central-1.images.arcpublishing.com/diarioas/MW7CIK2DMZGGBGMQTU7MOUCZ4I.jpg",
+        tags: ["action", "war", "1980s"],
+        description: "Rambo goes to Afghanistan to rescue his mentor and friend Colonel Trautman from the Soviets.",
+        rating: 4.3,
+        duration: "102 min"
+      },
+      { 
+        title: "Rambo", 
+        year: 2008,
+        video: "https://sr81.yevettesha.sbs/v4/9a/qg99w/cf-master.txt?v=1734820797", 
+        image: "https://images.sr.roku.com/idType/roku/context/global/id/ec09db9d818d59428b6f7ed6819ac2c2/images/gracenote/assets/p173465_d_v8_aa.jpg/magic/396x0/filters:quality(70)",
+        tags: ["action", "war", "2000s"],
+        description: "In Thailand, John Rambo joins a group of mercenaries to venture into war-torn Burma, and rescue a group of Christian aid workers who were kidnapped by the ruthless local infantry unit.",
+        rating: 4.6,
+        duration: "92 min"
+      },
+      { 
+        title: "Rambo: Last Blood", 
+        year: 2019,
+        video: "https://s9dz.yevettesh.sbs:443/v4/ck/ejy89/index-f2-v1-a1.txt", 
+        image: "https://play-lh.googleusercontent.com/v8OwCzJT_jV5ubJK_mffryr3-dtR0If3n7a5sURXiFdNV7VmXPWFBmt7rOtZicfCI7lMFnC8VXjN0LVQOFo=w240-h480-rw",
+        tags: ["action", "thriller", "2010s"],
+        description: "Rambo must confront his past and unearth his ruthless combat skills to exact revenge in a final mission.",
+        rating: 4.2,
+        duration: "89 min"
+      },
+    ];
 
+    // DOM Elements
+    const moviesContainer = document.getElementById('moviesContainer');
+    const recentlyAddedContainer = document.getElementById('recentlyAddedContainer');
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const themeToggle = document.getElementById('themeToggle');
+    const backToTopBtn = document.getElementById('backToTop');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMovies(movies);
+      renderRecentlyAdded(movies);
+      setupEventListeners();
+      
+      // Check for saved theme preference
+      if (localStorage.getItem('darkMode') === 'false') {
+        themeToggle.checked = true;
+        toggleTheme();
+      }
+    });
+
+    // Render all movies
+    function renderMovies(moviesToRender) {
+      moviesContainer.innerHTML = '';
+      moviesToRender.forEach((movie, index) => {
+        const movieCard = createMovieCard(movie, index);
+        moviesContainer.appendChild(movieCard);
+      });
+    }
+
+    // Render recently added movies (horizontal scroll)
+    function renderRecentlyAdded(moviesToRender) {
+      recentlyAddedContainer.innerHTML = '';
+      // Sort by year (newest first)
+      const sortedMovies = [...moviesToRender].sort((a, b) => b.year - a.year);
+      
+      sortedMovies.forEach((movie, index) => {
+        const movieCard = createMovieCard(movie, index, true);
+        recentlyAddedContainer.appendChild(movieCard);
+      });
+    }
+
+    // Create a movie card element
+    function createMovieCard(movie, index, isHorizontal = false) {
+      const card = document.createElement('div');
+      card.className = `movie-card rounded-xl overflow-hidden ${isHorizontal ? 'min-w-[250px]' : ''}`;
+      
+      card.innerHTML = `
+        <div class="relative overflow-hidden">
+          <img src="${movie.image}" 
+               alt="${movie.title}" 
+               class="movie-poster w-full object-cover">
+          <div class="absolute top-2 right-2 year-badge px-2 py-1 rounded-md text-xs font-bold">
+            ${movie.year}
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-4">
+            <h3 class="text-white font-bold text-lg truncate">${movie.title}</h3>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-yellow-400 text-sm">
+                <i class="fas fa-star"></i> ${movie.rating}/5
+              </span>
+              <span class="text-gray-300 text-sm">${movie.duration}</span>
+            </div>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-black bg-opacity-60 transition-all">
+            <button class="play-btn bg-yellow-600 hover:bg-yellow-700 text-white rounded-full w-14 h-14 flex items-center justify-center transition-all">
+              <i class="fas fa-play text-xl"></i>
+            </button>
+          </div>
+        </div>
+        <div class="p-4 hidden md:block">
+          <p class="text-gray-300 text-sm line-clamp-2">${movie.description}</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            ${movie.tags.map(tag => `<span class="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded-full">${tag}</span>`).join('')}
+          </div>
+        </div>
+      `;
+      
+      // Add click event to play button
+      card.querySelector('.play-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playMovie(movie, index);
+      });
+      
+      // Add click event to entire card
+      card.addEventListener('click', () => {
+        playMovie(movie, index);
+      });
+      
+      return card;
+    }
+
+    // Play movie function
+    function playMovie(movie, index) {
+      const url = `player.html?title=${encodeURIComponent(movie.title)}&video=${encodeURIComponent(movie.video)}&index=${index}`;
+      window.location.href = url;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Search functionality
+      searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredMovies = movies.filter(movie => 
+          movie.title.toLowerCase().includes(searchTerm) || 
+          movie.description.toLowerCase().includes(searchTerm) ||
+          movie.tags.some(tag => tag.includes(searchTerm))
+        );
+        renderMovies(filteredMovies);
+      });
+
+      // Filter buttons
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          const filter = button.dataset.filter;
+          let filteredMovies = movies;
+          
+          if (filter !== 'all') {
+            filteredMovies = movies.filter(movie => 
+              movie.tags.includes(filter) || 
+              movie.year.toString().includes(filter)
+            );
+          }
+          
+          renderMovies(filteredMovies);
+        });
+      });
+
+      // Theme toggle
+      themeToggle.addEventListener('change', toggleTheme);
+
+      // Back to top button
+      window.addEventListener('scroll', toggleBackToTop);
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Horizontal scroll buttons
+      scrollLeftBtn.addEventListener('click', () => {
+        recentlyAddedContainer.scrollBy({ left: -300, behavior: 'smooth' });
+      });
+      
+      scrollRightBtn.addEventListener('click', () => {
+        recentlyAddedContainer.scrollBy({ left: 300, behavior: 'smooth' });
+      });
+    }
+
+    // Toggle theme between dark and light
+    function toggleTheme() {
+      if (themeToggle.checked) {
+        // Light mode
+        document.documentElement.style.setProperty('--dark', '#f8f8f8');
+        document.documentElement.style.setProperty('--light-dark', '#e0e0e0');
+        document.documentElement.style.setProperty('--light', '#0a0a0a');
+        localStorage.setItem('darkMode', 'false');
+      } else {
+        // Dark mode
+        document.documentElement.style.setProperty('--dark', '#0a0a0a');
+        document.documentElement.style.setProperty('--light-dark', '#1a1a1a');
+        document.documentElement.style.setProperty('--light', '#f8f8f8');
+        localStorage.setItem('darkMode', 'true');
+      }
+    }
+
+    // Show/hide back to top button
+    function toggleBackToTop() {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove('opacity-0', 'invisible');
+        backToTopBtn.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopBtn.classList.remove('opacity-100', 'visible');
+        backToTopBtn.classList.add('opacity-0', 'invisible');
+      }
+    }
+  </script>
 </body>
 </html>
